@@ -1,4 +1,4 @@
-package com.furazin.android.fireabase2.Objetos;
+package com.furazin.android.firebase.Objetos;
 
 /**
  * Created by manza on 09/03/2017.

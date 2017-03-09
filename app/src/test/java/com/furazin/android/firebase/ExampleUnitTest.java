@@ -1,4 +1,4 @@
-package com.furazin.android.fireabase2;
+package com.furazin.android.firebase;
 
 import org.junit.Test;
 
