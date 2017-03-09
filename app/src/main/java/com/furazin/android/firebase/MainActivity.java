@@ -81,11 +81,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
-                        Toast.makeText(MainActivity.this, "Login correcto!",
-                                Toast.LENGTH_SHORT).show();
-                        Intent i = new Intent(MainActivity.this, BlankActivity.class);
-                        startActivity(i);
-                        finish();
+
                         // If sign in fails, display a message to the user. If sign in succeeds
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.
@@ -93,6 +89,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             Log.w(TAG, "signInWithEmail:failed", task.getException());
                             Toast.makeText(MainActivity.this, R.string.auth_failed,
                                     Toast.LENGTH_SHORT).show();
+                        }
+                        else {
+                            Toast.makeText(MainActivity.this, "Login correcto!",
+                                    Toast.LENGTH_SHORT).show();
+                            Intent i = new Intent(MainActivity.this, BlankActivity.class);
+                            startActivity(i);
+                            finish();
                         }
                     }
                 });
