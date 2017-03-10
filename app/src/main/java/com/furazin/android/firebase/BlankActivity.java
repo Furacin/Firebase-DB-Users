@@ -5,11 +5,14 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.furazin.android.firebase.Objetos.Adapter;
 import com.furazin.android.firebase.Objetos.FireBaseReferences;
 import com.furazin.android.firebase.Objetos.UsuarioInvitado;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -17,8 +20,14 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by manza on 09/03/2017.
@@ -36,6 +45,12 @@ public class BlankActivity extends AppCompatActivity{
     // Referenca a la BD de firebase
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef = database.getReference(FireBaseReferences.INVITADOS_REFERENCE);
+
+    // RecyclerView para mostrar los usuarios invitadis del usuario administrador registrado
+    private RecyclerView rv;
+    List<UsuarioInvitado> invitados;
+
+    Adapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +91,35 @@ public class BlankActivity extends AppCompatActivity{
                 }
             }
         };
+
+        // RecyclerView
+        rv = (RecyclerView) findViewById(R.id.recycle);
+
+        rv.setLayoutManager(new LinearLayoutManager(this));
+        invitados = new ArrayList<>();
+
+        adapter = new Adapter(invitados);
+
+        rv.setAdapter(adapter);
+
+        database.getReference(FireBaseReferences.INVITADOS_REFERENCE).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                invitados.removeAll(invitados);
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    UsuarioInvitado invitado = snapshot.getValue(UsuarioInvitado.class);
+                    if (invitado.getUser_admin().equals(user_admin))
+                            invitados.add(invitado);
+                }
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
     private void registrar(final String email_invitado, final String pass_invitado, final String user_admin) {
@@ -94,6 +138,7 @@ public class BlankActivity extends AppCompatActivity{
                         else {
                             Toast.makeText(BlankActivity.this, "Registro correcto!",
                                     Toast.LENGTH_SHORT).show();
+                            // Creamos en la base de datos un usuario de tipo invitado, que tiene asociado un usuario de tipo administrador
                             // Creamos en la base de datos un usuario de tipo invitado, que tiene asociado un usuario de tipo administrador
                             UsuarioInvitado user = new UsuarioInvitado(email_invitado, pass_invitado, user_admin);
                             myRef.push().setValue(user);
