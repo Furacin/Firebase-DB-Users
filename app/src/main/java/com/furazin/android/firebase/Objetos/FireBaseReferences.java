@@ -6,5 +6,5 @@ package com.furazin.android.firebase.Objetos;
 
 public class FireBaseReferences {
     final public static String USUARIOS_REFERENCE = "usuarios";
-    final public static String USUARIO_REFERENCE = "usuario";
+    final public static String INVITADOS_REFERENCE = "invitados";
 }
